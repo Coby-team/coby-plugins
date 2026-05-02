@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "coby-brain": {
+      "type": "http",
+      "url": "https://mcp-production-8831.up.railway.app/mcp",
+      "headers": {
+        "Authorization": "Bearer ${COBY_BRAIN_API_KEY}"
+      }
+    }
+  }
+}

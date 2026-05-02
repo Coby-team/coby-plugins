@@ -1,0 +1,19 @@
+{
+  "name": "coby",
+  "version": "0.1.0",
+  "description": "Coby plugins for Claude Code — identity-resolution brain and tooling for product agents.",
+  "owner": {
+    "name": "Coby",
+    "email": "plugins@joincoby.com",
+    "url": "https://joincoby.com"
+  },
+  "metadata": {
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "coby-brain",
+      "source": "coby-brain"
+    }
+  ]
+}
