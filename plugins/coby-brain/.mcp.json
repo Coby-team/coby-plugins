@@ -4,7 +4,7 @@
       "type": "http",
       "url": "https://brain.joincoby.com/mcp",
       "headers": {
-        "Authorization": "Bearer ${COBY_BRAIN_API_KEY}"
+        "Authorization": "Bearer ${user_config.api_key}"
       }
     },
     "posthog": {

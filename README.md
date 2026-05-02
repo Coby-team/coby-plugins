@@ -4,7 +4,7 @@ Private marketplace for [Coby](https://joincoby.com) Claude Code plugins. Coby b
 
 ## Plugins
 
-### `coby-brain` (v0.2.0)
+### `coby-brain` (v0.3.0)
 
 The Coby brain plugged into Claude Code. One install gives every Claude Code session expert-level access to your users, your product activity, and your billing — by composing Coby's identity-resolution brain with the official MCPs of the tools you already use.
 
@@ -12,7 +12,7 @@ The Coby brain plugged into Claude Code. One install gives every Claude Code ses
 
 | MCP namespace | Purpose | Auth |
 |---|---|---|
-| `mcp__coby-brain__*` | Identity resolution: users, orgs, projects, prompts (Coby's hosted brain) | Bearer `${COBY_BRAIN_API_KEY}` (env var) |
+| `mcp__coby-brain__*` | Identity resolution: users, orgs, projects, prompts (Coby's hosted brain) | Bearer (prompted at install, stored in OS keychain) |
 | `mcp__posthog__*` | Product analytics — sessions, events, feature flags, errors (~200 tools) | Browser OAuth |
 | `mcp__pylon__*` | Customer support — issues, accounts, contacts (~13 tools) | Browser OAuth |
 | `mcp__hyperline__*` | Subscription billing — customers, subscriptions, invoices (~100 tools) | Browser OAuth |
@@ -35,17 +35,16 @@ You need:
 - A **Member or Admin seat** in your Pylon workspace (Pylon's MCP rejects Viewer / Integration users)
 
 ```bash
-# 1. Set your Coby brain API key — add this to ~/.zshrc or ~/.bashrc
-export COBY_BRAIN_API_KEY=sk_coby_...
-
-# 2. Add the marketplace
+# 1. Add the marketplace
 claude plugin marketplace add Coby-team/coby-plugins
 
-# 3. Install the plugin
+# 2. Install the plugin
 claude plugin install coby-brain@coby
 ```
 
-That's it for setup. The first time you use any vendor tool (`mcp__posthog__*`, `mcp__pylon__*`, `mcp__hyperline__*`) in a Claude Code session, your browser opens to the vendor's OAuth screen — click "Allow", and Claude Code caches the token. **One OAuth per vendor, once. No API keys to copy around.**
+When the plugin is enabled, **Claude Code prompts you for your Coby brain API key** — paste it once. It's stored in your OS keychain (not in `settings.json`), and you never need to type it again on this machine. No env var, no shell rc edits.
+
+The first time you use any vendor tool (`mcp__posthog__*`, `mcp__pylon__*`, `mcp__hyperline__*`) in a Claude Code session, your browser opens to the vendor's OAuth screen — click "Allow", and Claude Code caches the token. **One OAuth per vendor, once.**
 
 Verify the brain side end-to-end:
 
@@ -69,8 +68,8 @@ For headless / CI environments, set `GITHUB_TOKEN` so the marketplace can pull w
 
 ## Troubleshooting
 
-- **`/coby-brain:status` returns auth error** — `echo $COBY_BRAIN_API_KEY` should print your key. If empty, your shell didn't pick up the export — open a new terminal or re-source your rc.
-- **`mcp__coby-brain__*` tools missing in Claude** — the brain MCP didn't load. Run `claude doctor` for MCP errors, or `claude --debug` to see startup failures.
+- **`/coby-brain:status` returns auth error** — your stored API key is invalid (revoked, mistyped, etc.). Re-trigger the install prompt: `claude plugin install coby-brain@coby --force`. Paste your key again.
+- **`mcp__coby-brain__*` tools missing in Claude** — the brain MCP didn't load. Run `claude doctor` for MCP errors, or `claude --debug` to see startup failures. Check that you completed the API-key prompt at install time.
 - **Vendor tools (`mcp__posthog__*`, `mcp__pylon__*`, `mcp__hyperline__*`) missing** — invoke one in chat and Claude Code should trigger the OAuth flow. If nothing happens, run `claude --debug` and look for `mcpServers` errors.
 - **Pylon OAuth fails with "your seat doesn't allow this"** — Pylon requires a Member or Admin seat for MCP access. Ask your workspace owner to upgrade your seat.
 - **OAuth token expired in the middle of work** — vendor tokens last hours to days depending on the vendor. Just trigger the tool again; CC will redo the OAuth flow.

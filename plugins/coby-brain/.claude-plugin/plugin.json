@@ -1,13 +1,22 @@
 {
   "name": "coby-brain",
-  "version": "0.2.0",
-  "description": "The Coby brain plugged into Claude Code: identity-resolution brain plus the connected product-data sources your agent needs (PostHog, Pylon, Hyperline). One install, one env var, three browser OAuths — and every Claude Code session is an expert on your users, your product, and your billing.",
+  "version": "0.3.0",
+  "description": "The Coby brain plugged into Claude Code: identity-resolution brain plus the connected product-data sources your agent needs (PostHog, Pylon, Hyperline). One install, one prompt for your Coby key, three browser OAuths — and every Claude Code session is an expert on your users, your product, and your billing.",
   "author": {
     "name": "Coby",
     "email": "plugins@joincoby.com",
     "url": "https://joincoby.com"
   },
   "homepage": "https://joincoby.com",
+  "userConfig": {
+    "api_key": {
+      "type": "string",
+      "title": "Coby brain API key",
+      "description": "Bearer token for Coby's identity-resolution brain. Request a key from tom@joincoby.com.",
+      "sensitive": true,
+      "required": true
+    }
+  },
   "keywords": [
     "mcp",
     "identity-resolution",
