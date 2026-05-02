@@ -8,7 +8,7 @@ Format:
 
 ```
 coby-brain — <verdict emoji> <verdict word>
-URL: https://mcp-production-8831.up.railway.app/mcp
+URL: https://brain.joincoby.com/mcp
 
 Pages:    users <N>  orgs <N>  projects <N>  prompts <N>
 Links:    <N>
@@ -23,7 +23,7 @@ Verdict logic:
 
 If the call fails, do NOT just dump the raw error. Diagnose:
 - 401 / 403 → "Auth failed. Check that `COBY_BRAIN_API_KEY` is set in your shell (`echo $COBY_BRAIN_API_KEY`). If empty, export it and restart Claude Code."
-- Network / DNS error → "Cannot reach the brain at `mcp-production-8831.up.railway.app`. Check your network, or the Railway deployment status."
+- Network / DNS error → "Cannot reach the brain at `brain.joincoby.com`. Check your network, or the Railway deployment status."
 - 5xx → "The brain is up but returned a server error. Ping Tom (tom@joincoby.com) with the timestamp."
 - Tool not found (`mcp__coby-brain__get_stats` missing) → "The MCP didn't load. Run `claude doctor` to see startup errors, or `claude --debug` for verbose logs."
 

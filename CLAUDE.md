@@ -19,7 +19,7 @@ The **marketplace + plugin structure** plus the **MCP wiring** is the validated 
 - `.claude-plugin/marketplace.json` — marketplace manifest, monorepo `metadata.pluginRoot`
 - `plugins/coby-brain/.claude-plugin/plugin.json` — plugin manifest
 - `plugins/coby-brain/.mcp.json` — bundles 4 MCP servers:
-  - `coby-brain` → `https://mcp-production-8831.up.railway.app/mcp` (Bearer `${COBY_BRAIN_API_KEY}`)
+  - `coby-brain` → `https://brain.joincoby.com/mcp` (Bearer `${COBY_BRAIN_API_KEY}`)
   - `posthog` → `https://mcp.posthog.com/mcp` (OAuth)
   - `pylon` → `https://mcp.usepylon.com` (OAuth, requires Member/Admin seat)
   - `hyperline` → `https://mcp.hyperline.co/mcp` (OAuth)
