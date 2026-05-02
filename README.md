@@ -4,27 +4,38 @@ Private marketplace for [Coby](https://joincoby.com) Claude Code plugins. Coby b
 
 ## Plugins
 
-### `coby-brain` (v0.1.0)
+### `coby-brain` (v0.2.0)
 
-Query Coby's identity-resolution brain (users, orgs, projects, prompts) from any Claude Code session. Backed by a remote HTTP MCP deployed on Railway — no local install, no `npx`, no Postgres credentials. Just an API key and you're talking to the brain.
+The Coby brain plugged into Claude Code. One install gives every Claude Code session expert-level access to your users, your product activity, and your billing — by composing Coby's identity-resolution brain with the official MCPs of the tools you already use.
 
-**MCP tools** (read-only, ~14): `search`, `query`, `get_page`, `list_pages`, `get_links`, `get_backlinks`, `traverse_graph`, `get_timeline`, `resolve_slugs`, `find_orphans`, `get_chunks`, `get_raw_data`, `get_stats`, `get_prompt_attachment`. Surface as `mcp__coby-brain__*` tools.
+**Bundled MCPs**
 
-**Slash commands**:
-- `/coby-brain:status` — sanity-check brain connection (page counts, last sync, latency, verdict)
-- `/coby-brain:user <id|email|slug>` — full user profile (orgs, recent activity, projects, prompts)
+| MCP namespace | Purpose | Auth |
+|---|---|---|
+| `mcp__coby-brain__*` | Identity resolution: users, orgs, projects, prompts (Coby's hosted brain) | Bearer `${COBY_BRAIN_API_KEY}` (env var) |
+| `mcp__posthog__*` | Product analytics — sessions, events, feature flags, errors (~200 tools) | Browser OAuth |
+| `mcp__pylon__*` | Customer support — issues, accounts, contacts (~13 tools) | Browser OAuth |
+| `mcp__hyperline__*` | Subscription billing — customers, subscriptions, invoices (~100 tools) | Browser OAuth |
 
-**Skills**: `coby-brain-lookup` auto-triggers when the model needs identity data on a Fimo user / org / project / prompt — prevents hallucination by routing to the brain instead of training data.
+> **Notion is intentionally not in v1.** Notion has no per-user join key, so it falls outside Coby's identity-resolution scope. If you need Notion in Claude Code, install [Notion's official MCP](https://mcp.notion.com/mcp) separately.
+
+**Slash commands** *(placeholder — will be replaced with cross-source workflows)*
+- `/coby-brain:status` — sanity-check brain connection
+- `/coby-brain:user <id|email|slug>` — user profile from the brain
+
+**Skills** *(placeholder — will be replaced)*
+- `coby-brain-lookup` — auto-triggers on Fimo identity questions
 
 ## Install
 
 You need:
 - Claude Code recent version (plugin marketplaces require a current build)
 - A Coby brain API key — request from `tom@joincoby.com`
-- `gh auth login` already done (this is a private repo; Claude Code uses your gh credentials to clone it)
+- `gh auth login` already done (this is a private repo)
+- A **Member or Admin seat** in your Pylon workspace (Pylon's MCP rejects Viewer / Integration users)
 
 ```bash
-# 1. Set your API key — add this to ~/.zshrc or ~/.bashrc to persist
+# 1. Set your Coby brain API key — add this to ~/.zshrc or ~/.bashrc
 export COBY_BRAIN_API_KEY=sk_coby_...
 
 # 2. Add the marketplace
@@ -34,7 +45,9 @@ claude plugin marketplace add Coby-team/coby-plugins
 claude plugin install coby-brain@coby
 ```
 
-Verify the connection:
+That's it for setup. The first time you use any vendor tool (`mcp__posthog__*`, `mcp__pylon__*`, `mcp__hyperline__*`) in a Claude Code session, your browser opens to the vendor's OAuth screen — click "Allow", and Claude Code caches the token. **One OAuth per vendor, once. No API keys to copy around.**
+
+Verify the brain side end-to-end:
 
 ```bash
 claude
@@ -43,7 +56,7 @@ claude
 > /coby-brain:status
 ```
 
-You should see something like `coby-brain — ✅ healthy` plus page counts.
+You should see `coby-brain — ✅ healthy` plus page counts. To verify a vendor is wired correctly, ask Claude something the vendor can answer (e.g. "list our last 5 PostHog feature flags") and watch the OAuth flow trigger.
 
 ## Updating
 
@@ -52,14 +65,16 @@ claude plugin marketplace update coby
 claude plugin install coby-brain@coby --force
 ```
 
-For headless / CI updates, set `GITHUB_TOKEN` so the marketplace can pull without an interactive `gh` flow.
+For headless / CI environments, set `GITHUB_TOKEN` so the marketplace can pull without an interactive `gh` flow.
 
 ## Troubleshooting
 
-- **`/coby-brain:status` returns auth error** — check `echo $COBY_BRAIN_API_KEY` prints your key. If empty, your shell didn't pick up the export — open a new terminal or re-source your rc.
-- **`mcp__coby-brain__*` tools not visible to Claude** — the MCP didn't start. Run `claude doctor` for MCP load errors, or `claude --debug` to see what failed at boot.
-- **Slash commands `/coby-brain:status` not found** — re-run `claude plugin install coby-brain@coby --force` to refresh the install.
-- **Marketplace add fails with permission error** — `gh auth status` to verify you can clone the private repo. If `gh` isn't installed, install it (`brew install gh` / `apt install gh`) and `gh auth login`.
+- **`/coby-brain:status` returns auth error** — `echo $COBY_BRAIN_API_KEY` should print your key. If empty, your shell didn't pick up the export — open a new terminal or re-source your rc.
+- **`mcp__coby-brain__*` tools missing in Claude** — the brain MCP didn't load. Run `claude doctor` for MCP errors, or `claude --debug` to see startup failures.
+- **Vendor tools (`mcp__posthog__*`, `mcp__pylon__*`, `mcp__hyperline__*`) missing** — invoke one in chat and Claude Code should trigger the OAuth flow. If nothing happens, run `claude --debug` and look for `mcpServers` errors.
+- **Pylon OAuth fails with "your seat doesn't allow this"** — Pylon requires a Member or Admin seat for MCP access. Ask your workspace owner to upgrade your seat.
+- **OAuth token expired in the middle of work** — vendor tokens last hours to days depending on the vendor. Just trigger the tool again; CC will redo the OAuth flow.
+- **Marketplace add fails with permission error** — `gh auth status` to verify access. If `gh` isn't installed: `brew install gh` / `apt install gh`, then `gh auth login`.
 
 ## License
 

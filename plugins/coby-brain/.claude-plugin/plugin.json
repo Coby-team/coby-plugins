@@ -1,7 +1,7 @@
 {
   "name": "coby-brain",
-  "version": "0.1.0",
-  "description": "Query Coby's identity-resolution brain (users, orgs, projects, prompts) from any Claude Code session. Backed by a remote HTTP MCP — no local install, just an API key.",
+  "version": "0.2.0",
+  "description": "The Coby brain plugged into Claude Code: identity-resolution brain plus the connected product-data sources your agent needs (PostHog, Pylon, Hyperline). One install, one env var, three browser OAuths — and every Claude Code session is an expert on your users, your product, and your billing.",
   "author": {
     "name": "Coby",
     "email": "plugins@joincoby.com",
@@ -12,7 +12,9 @@
     "mcp",
     "identity-resolution",
     "agents",
-    "coby",
-    "fimo"
+    "product-analytics",
+    "customer-support",
+    "billing",
+    "coby"
   ]
 }

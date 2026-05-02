@@ -6,6 +6,18 @@
       "headers": {
         "Authorization": "Bearer ${COBY_BRAIN_API_KEY}"
       }
+    },
+    "posthog": {
+      "type": "http",
+      "url": "https://mcp.posthog.com/mcp"
+    },
+    "pylon": {
+      "type": "http",
+      "url": "https://mcp.usepylon.com"
+    },
+    "hyperline": {
+      "type": "http",
+      "url": "https://mcp.hyperline.co/mcp"
     }
   }
 }
