@@ -4,7 +4,7 @@ Private marketplace for [Coby](https://joincoby.com) Claude Code plugins. Coby b
 
 ## Plugins
 
-### `coby-brain` (v0.4.0)
+### `coby-brain` (v0.5.0)
 
 The Coby brain plugged into Claude Code. One install gives every Claude Code session expert-level access to your users, your product activity, and your billing — by composing Coby's identity-resolution brain with the official MCPs of the tools you already use.
 
@@ -19,12 +19,8 @@ The Coby brain plugged into Claude Code. One install gives every Claude Code ses
 
 > **Notion is intentionally not in v1.** Notion has no per-user join key, so it falls outside Coby's identity-resolution scope. If you need Notion in Claude Code, install [Notion's official MCP](https://mcp.notion.com/mcp) separately.
 
-**Slash commands** *(placeholder — will be replaced with cross-source workflows)*
-- `/coby-brain:status` — sanity-check brain connection
-- `/coby-brain:user <id|email|slug>` — user profile from the brain
-
-**Skills** *(placeholder — will be replaced)*
-- `coby-brain-lookup` — auto-triggers on Fimo identity questions
+**Skills**
+- `customer-profile` — auto-triggers when you ask about a Fimo user; composes brain + PostHog + Pylon + Hyperline into a one-page profile
 
 ## Install
 
@@ -46,16 +42,7 @@ When the plugin is enabled, **Claude Code prompts you for your Coby brain API ke
 
 The first time you use any vendor tool (`mcp__posthog__*`, `mcp__pylon__*`, `mcp__hyperline__*`) in a Claude Code session, your browser opens to the vendor's OAuth screen — click "Allow", and Claude Code caches the token. **One OAuth per vendor, once.**
 
-Verify the brain side end-to-end:
-
-```bash
-claude
-```
-```
-> /coby-brain:status
-```
-
-You should see `coby-brain — ✅ healthy` plus page counts. To verify a vendor is wired correctly, ask Claude something the vendor can answer (e.g. "list our last 5 PostHog feature flags") and watch the OAuth flow trigger.
+Verify end-to-end by asking Claude a customer question — e.g. *"tell me about &lt;a known Fimo user&gt;"*. Claude resolves via `mcp__coby-brain__search` then composes live signals from PostHog / Pylon / Hyperline (each triggers its OAuth flow on first use).
 
 ## Updating
 
@@ -68,7 +55,7 @@ For headless / CI environments, set `GITHUB_TOKEN` so the marketplace can pull w
 
 ## Troubleshooting
 
-- **`/coby-brain:status` returns auth error** — your stored API key is invalid (revoked, mistyped, etc.). Re-trigger the install prompt: `claude plugin install coby-brain@coby --force`. Paste your key again.
+- **`mcp__coby-brain__*` tools fail with auth error** — your stored API key is invalid (revoked, mistyped, etc.). Re-trigger the install prompt: `claude plugin install coby-brain@coby --force`. Paste your key again.
 - **`mcp__coby-brain__*` tools missing in Claude** — the brain MCP didn't load. Run `claude doctor` for MCP errors, or `claude --debug` to see startup failures. Check that you completed the API-key prompt at install time.
 - **Vendor tools (`mcp__posthog__*`, `mcp__pylon__*`, `mcp__hyperline__*`) missing** — invoke one in chat and Claude Code should trigger the OAuth flow. If nothing happens, run `claude --debug` and look for `mcpServers` errors.
 - **Pylon OAuth fails with "your seat doesn't allow this"** — Pylon requires a Member or Admin seat for MCP access. Ask your workspace owner to upgrade your seat.

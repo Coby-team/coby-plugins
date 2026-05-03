@@ -11,9 +11,9 @@ The plugin is one cohesive software, not a thin distribution wrapper. The differ
 - **Notion intentionally out of scope** for v1. Per the `coby-brain-mcp` (formerly `coby-users-database`) charter, Notion has no per-user join key — it doesn't fit the brain's mapping. Users can install Notion's MCP separately if they want.
 - **Hyperline shipped despite connect-coby gap.** The vendor MCP is wired in even though connect-coby has zero Hyperline integration today. Trade-off: Aurélien gets billing tools immediately, but the brain can't yet map Coby user IDs ↔ Hyperline customer IDs. Bridge that in connect-coby later.
 
-## What's real vs placeholder
+## Plugin surface
 
-The **marketplace + plugin structure** plus the **MCP wiring** is the validated v0.3 deliverable. The skill and command **content** is throwaway placeholder, written only to validate end-to-end wiring (skill auto-trigger, slash invocation, MCP boot). It has **not** been designed for real workflows and will be replaced.
+The **marketplace + plugin structure** plus the **MCP wiring** is the validated v0.3 deliverable. The first real skill (`customer-profile`) composes the brain with the three vendor MCPs. Slash commands are deferred — `commands/` is kept as an empty stub for future additions.
 
 **Real surface (do not regress):**
 - `.claude-plugin/marketplace.json` — marketplace manifest, monorepo `metadata.pluginRoot`
@@ -23,17 +23,13 @@ The **marketplace + plugin structure** plus the **MCP wiring** is the validated 
   - `posthog` → `https://mcp.posthog.com/mcp` (OAuth)
   - `pylon` → `https://mcp.usepylon.com` (OAuth, requires Member/Admin seat)
   - `hyperline` → `https://mcp.hyperline.co/mcp` (OAuth)
+- `plugins/coby-brain/skills/customer-profile/SKILL.md` — composes brain + 3 vendor MCPs into a one-page customer profile (auto-triggered by user/customer questions)
+- `plugins/coby-brain/hooks/hooks.json` + `hooks/session_brief.sh` — SessionStart hook that orients Claude Code on the plugin context at every session start
 - `README.md` — install + per-vendor onboarding for end users
-
-**Placeholder (slated for full rewrite):**
-- `plugins/coby-brain/skills/coby-brain-lookup/SKILL.md` — currently brain-only; real version should compose brain + vendors
-- `plugins/coby-brain/commands/status.md` — currently checks brain only; real version should check all 4 MCPs
-- `plugins/coby-brain/commands/user.md` — currently brain-only profile; real version should pull recent Pylon tickets, PostHog activity, Hyperline subscription state
 
 ## When working here
 
-- **Do not polish the placeholders.** No expanding their content, no adding edge cases, no treating their behavior as a contract.
 - **Do not add new MCPs or new vendors** without an explicit ask from Tom. The 4-MCP set is locked for v1.
 - **Vendor MCP URLs and the brain MCP URL are real product config** — bug fixes there are welcome.
-- When Tom asks for the real skills/commands, **replace** the placeholders entirely. Real skills should compose `coby-brain` + vendor MCPs — that's the whole differentiation.
+- New skills must compose `coby-brain` + vendor MCPs (`customer-profile` is the reference pattern). Brain-only skills regress the differentiation — the brain alone is just identity resolution.
 - Don't reach for a Coby-built proxy MCP unless you have a measured reason (context cost, missing curation, vendor MCP downtime). Plan B (proxy via connect-coby) is on the shelf, not the default.

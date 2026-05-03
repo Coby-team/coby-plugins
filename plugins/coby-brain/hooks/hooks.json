@@ -1,0 +1,16 @@
+{
+  "description": "Brief Claude on the Coby brain plugin and Fimo customer-intelligence patterns at session start",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/session_brief.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
