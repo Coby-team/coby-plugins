@@ -1,6 +1,6 @@
 {
   "name": "coby-brain",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "The Coby brain plugged into Claude Code: identity-resolution brain plus the connected product-data sources your agent needs (PostHog, Pylon, Hyperline). One install, one prompt for your Coby key, three browser OAuths — and every Claude Code session is an expert on your users, your product, and your billing.",
   "author": {
     "name": "Coby",
@@ -13,7 +13,7 @@
       "type": "string",
       "title": "Coby brain API key",
       "description": "Bearer token for Coby's identity-resolution brain. Request a key from tom@joincoby.com.",
-      "sensitive": true,
+      "sensitive": false,
       "required": true
     }
   },

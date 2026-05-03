@@ -4,7 +4,7 @@ Private marketplace for [Coby](https://joincoby.com) Claude Code plugins. Coby b
 
 ## Plugins
 
-### `coby-brain` (v0.3.0)
+### `coby-brain` (v0.4.0)
 
 The Coby brain plugged into Claude Code. One install gives every Claude Code session expert-level access to your users, your product activity, and your billing — by composing Coby's identity-resolution brain with the official MCPs of the tools you already use.
 
@@ -12,7 +12,7 @@ The Coby brain plugged into Claude Code. One install gives every Claude Code ses
 
 | MCP namespace | Purpose | Auth |
 |---|---|---|
-| `mcp__coby-brain__*` | Identity resolution: users, orgs, projects, prompts (Coby's hosted brain) | Bearer (prompted at install, stored in OS keychain) |
+| `mcp__coby-brain__*` | Identity resolution: users, orgs, projects, prompts (Coby's hosted brain) | Bearer (prompted at install, stored in `~/.claude/settings.json`) |
 | `mcp__posthog__*` | Product analytics — sessions, events, feature flags, errors (~200 tools) | Browser OAuth |
 | `mcp__pylon__*` | Customer support — issues, accounts, contacts (~13 tools) | Browser OAuth |
 | `mcp__hyperline__*` | Subscription billing — customers, subscriptions, invoices (~100 tools) | Browser OAuth |
@@ -42,7 +42,7 @@ claude plugin marketplace add Coby-team/coby-plugins
 claude plugin install coby-brain@coby
 ```
 
-When the plugin is enabled, **Claude Code prompts you for your Coby brain API key** — paste it once. It's stored in your OS keychain (not in `settings.json`), and you never need to type it again on this machine. No env var, no shell rc edits.
+When the plugin is enabled, **Claude Code prompts you for your Coby brain API key** — paste it once. It's stored in `~/.claude/settings.json` under `pluginConfigs.coby-brain.options.api_key`, and you never need to type it again on this machine. No env var, no shell rc edits. Don't commit, screenshot, or share that file — treat it like an SSH key.
 
 The first time you use any vendor tool (`mcp__posthog__*`, `mcp__pylon__*`, `mcp__hyperline__*`) in a Claude Code session, your browser opens to the vendor's OAuth screen — click "Allow", and Claude Code caches the token. **One OAuth per vendor, once.**
 
