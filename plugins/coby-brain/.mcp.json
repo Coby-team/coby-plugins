@@ -7,14 +7,6 @@
         "Authorization": "Bearer ${user_config.api_key}"
       }
     },
-    "posthog": {
-      "type": "http",
-      "url": "https://mcp.posthog.com/mcp"
-    },
-    "pylon": {
-      "type": "http",
-      "url": "https://mcp.usepylon.com"
-    },
     "hyperline": {
       "type": "http",
       "url": "https://mcp.hyperline.co/mcp"
