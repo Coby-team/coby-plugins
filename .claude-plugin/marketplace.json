@@ -7,9 +7,6 @@
     "email": "plugins@joincoby.com",
     "url": "https://joincoby.com"
   },
-  "metadata": {
-    "version": "0.1.0"
-  },
   "plugins": [
     {
       "name": "coby-brain",
