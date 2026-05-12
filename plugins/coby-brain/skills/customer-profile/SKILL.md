@@ -1,6 +1,6 @@
 ---
 name: customer-profile
-description: Build a complete picture of a single Fimo customer — who they are, how they use the product, whether they pay, whether they hit bugs. Use whenever the user asks about a specific Fimo user by name, email, ID or company, or says things like "tell me about X", "who is X", "is X a customer", "what does X pay", "any issues with X", "is X churning", "what has X built", "should we worry about X". Composes the coby-brain MCP (identity + Fimo-side activity + PostHog usage + Pylon support) with the Hyperline MCP (billing). Read-only.
+description: Build a complete picture of a single Fimo customer — who they are, how they use the product, whether they pay, whether they hit bugs. Use whenever the user asks about a specific Fimo user by name, email, ID or company, or says things like "tell me about X", "who is X", "is X a customer", "what does X pay", "any issues with X", "is X churning", "what has X built", "should we worry about X". Uses the coby-brain MCP for everything (identity + Fimo-side activity + curated PostHog + curated Pylon + curated Hyperline). Read-only.
 ---
 
 # Customer Profile
@@ -15,7 +15,7 @@ A customer profile answers "what's the full picture on this user?" — a questio
 
 **Pylon** (via `mcp__coby-brain__pylon_*`) — what they complain about. Tickets, conversations, themes. Joined via `pylon_contact_id` returned by the brain. The signal is *friction*: bugs they hit, requests they made, sentiment over time.
 
-**Hyperline** (via the standalone `mcp__hyperline__*` MCP) — whether they pay and how much. Subscriptions, plan, MRR, invoices, status. Joined at the **org level** via the org's `hyperline_customer_id` — a user's billing lives on their `primary_org`. The signal is *commercial weight*.
+**Hyperline** (via `mcp__coby-brain__hyperline_*`) — whether they pay and how much. Subscriptions, plan, MRR, invoices, status. Joined at the **org level** via the org's `hyperline_customer_id` (which equals `fimo_org_id` for Fimo) — a user's billing lives on their `primary_org`. The signal is *commercial weight*.
 
 ## The one rule that matters
 

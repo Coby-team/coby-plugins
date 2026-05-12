@@ -6,10 +6,6 @@
       "headers": {
         "Authorization": "Bearer ${user_config.api_key}"
       }
-    },
-    "hyperline": {
-      "type": "http",
-      "url": "https://mcp.hyperline.co/mcp"
     }
   }
 }
