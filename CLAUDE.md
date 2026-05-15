@@ -25,12 +25,47 @@ The **marketplace + plugin structure** plus the **MCP wiring** is the validated 
 - `plugins/coby-brain/hooks/hooks.json` + `hooks/session_brief.sh` — SessionStart hook that orients Claude Code on the plugin context at every session start
 - `README.md` — install + onboarding for end users
 
-## When working here
+## Key invariants — do not break
 
-- **Do not add new MCPs or new vendors** without an explicit ask from Tom. The 1-MCP set (brain only, serving curated PostHog/Pylon/Hyperline) is locked for v1.
-- **The brain MCP URL is real product config** — bug fixes there are welcome.
-- New skills use the brain for everything — identity, product, support, billing all live under `mcp__coby-brain__*`. `customer-profile` is the reference pattern.
+- **Don't add new MCPs or new vendors** without an explicit ask from Tom. The 1-MCP set (brain only, serving curated PostHog/Pylon/Hyperline) is locked for v1.
+- **Never rename or remove `userConfig` field names** without a major version bump and a heads-up to existing users. Secrets live at `pluginSecrets["coby-brain@coby"].<field>` in `~/.claude/.credentials.json`, namespaced by `plugin@marketplace + field`. Plugin updates only stay safe (config preserved across versions) because field names are stable — renaming or removing them silently re-prompts every user. Adding new fields is fine.
+- **Don't reach for a Coby-built generic proxy MCP** unless you have a measured reason (context cost, missing curation, vendor MCP downtime). Plan B (proxy via `connect-coby`) is on the shelf, not the default.
+- **Keep `marketplace.json.plugins[].description` in sync with the actual MCP/vendor set.** It drifted in v0.6/v0.8 transitions; users read it before installing.
+
+## Guidelines (when working here)
+
+- The brain MCP URL is real product config — bug fixes are welcome.
+- New skills use the brain for everything — identity, product, support, billing all live under `mcp__coby-brain__*`. `customer-profile` is the reference pattern; `product-reflection` (v0.7.0) is the second.
 - When dropping or renaming MCPs or vendor namespaces in `.mcp.json`, grep all skills/commands/hooks/docs for the old `mcp__<name>__*` namespace before pushing — see the v0.6.0 post-mortem in `coby-brain-mcp/docs/superpowers/plans/2026-05-04-vendor-tools-expansion.md`.
-- **Never rename or remove `userConfig` field names without a major version bump and a heads-up to existing users.** User secrets live at `pluginSecrets["coby-brain@coby"].<field>` in `~/.claude/.credentials.json`, namespaced by plugin@marketplace + field name. The whole point of plugin updates being safe (config preserved across versions) hinges on this stability. Adding new fields is fine; renaming or removing them silently re-prompts every user for their api_key.
-- **Plugin update model.** Bumping `plugin.json.version` and pushing to `main` does **not** auto-update users by default — third-party marketplaces (which `coby` is) ship with auto-update OFF in Claude Code. Users must enable it via `/plugin → Marketplaces → coby → Enable auto-update` (the `coby-cli init` wizard reminds them in its post-install notice). Once enabled, Claude Code refreshes the marketplace at session startup, updates installed plugins to `plugin.json.version`, and prompts `/reload-plugins`. Without auto-update, users must run `/plugin marketplace update coby` + `/reload-plugins` manually. The `marketplace.json` does not need a version field — `plugin.json.version` is the single source of truth Claude Code reads. User config (`api_key`, OAuth tokens) lives outside the plugin cache and survives updates by design. (Anthropic feature request to expose `autoUpdate` programmatically and let third-party marketplace authors flip the default: `anthropics/claude-code#51350` — open as of 2026-05-07.)
-- Don't reach for a Coby-built generic proxy MCP unless you have a measured reason (context cost, missing curation, vendor MCP downtime). Plan B (proxy via connect-coby) is on the shelf, not the default.
+
+## Tech notes — per brick
+
+### Claude Code plugin model
+
+**Source of truth for version: `plugins/coby-brain/.claude-plugin/plugin.json.version`.** Claude Code reads this. `marketplace.json` does not carry a version field — never add one.
+
+**Third-party marketplaces ship with auto-update OFF.** Bumping `plugin.json.version` and pushing to `main` does **not** auto-update users by default — `coby` is a third-party marketplace (not an Anthropic-curated one), and Claude Code ships those with auto-update disabled. Users have two options:
+
+- **Enable auto-update once**: `/plugin → Marketplaces → coby → Enable auto-update`. After that, Claude Code refreshes the marketplace at session startup, updates installed plugins to the new `plugin.json.version`, and prompts `/reload-plugins`. The `coby-cli init` wizard's post-install notice reminds users to do this.
+- **Update manually each time**: `/plugin marketplace update coby` + `/reload-plugins`.
+
+Tracking issue to expose `autoUpdate` programmatically so third-party marketplaces can flip the default: `anthropics/claude-code#51350` (open as of 2026-05-07).
+
+**User config survives updates by design.** `pluginSecrets["coby-brain@coby"].api_key` lives in `~/.claude/.credentials.json`, namespaced by `plugin@marketplace + field`. The credentials file is outside the plugin cache. A plugin version bump doesn't touch it — unless we rename a `userConfig` field (see invariant above).
+
+**SessionStart hook (`hooks/session_brief.sh`).** Runs once per session, prints a brief that orients Claude Code on the plugin context (which tools are under `mcp__coby-brain__*`, which skills exist, default routing). When skills are added/renamed, update the hook content. When MCP namespaces change in `.mcp.json`, the brief must reflect the new prefix.
+
+### Plugin manifest fields
+
+`plugin.json.userConfig` drives the install-time prompt. The `sensitive: true` flag determines storage path: `true` → `.credentials.json`, `false` → `settings.json`. We use `true` (history: v0.4.0 tried `false` for CLI pre-fill, v0.4.1 reverted because the CLI now writes the same `.credentials.json` path directly). When adding a new userConfig field, default to `sensitive: true` unless the value is genuinely not a secret.
+
+## Release workflow
+
+Before tagging a new plugin version:
+
+1. **Bump `plugin.json.version`** (semver). This is the source-of-truth field Claude Code reads.
+2. **Sync `marketplace.json.plugins[].description`** if the MCP set or vendor curation changed. Drift here mis-sells the plugin to potential installers.
+3. **Update `hooks/session_brief.sh`** if skills/commands/MCPs/tool namespaces changed — the brief is read literally by every session.
+4. **Grep `mcp__<name>__*` across the repo** if a vendor MCP or namespace moved. Skills/commands referring to a removed namespace will silently no-op.
+5. **Commit + push to `main`.** Auto-update OFF by default for third-party marketplaces — users on auto-update will pick it up next session; others must run `/plugin marketplace update coby` + `/reload-plugins`.
+6. **No marketplace.json version bump** — there is no version field on the marketplace. Don't add one.
