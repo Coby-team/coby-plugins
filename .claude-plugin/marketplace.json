@@ -11,7 +11,7 @@
     {
       "name": "coby-brain",
       "source": "./plugins/coby-brain",
-      "description": "The Coby brain plugged into Claude Code: identity-resolution brain that proxies curated PostHog (product analytics) and Pylon (customer support) tools, plus the Hyperline MCP for billing."
+      "description": "The Coby brain plugged into Claude Code: identity-resolution brain that proxies curated PostHog (product analytics), Pylon (customer support), and Hyperline (billing) tools through one hosted MCP."
     }
   ]
 }
