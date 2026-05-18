@@ -1,7 +1,7 @@
 {
   "name": "coby-brain",
-  "version": "0.8.1",
-  "description": "The Coby brain plugged into Claude Code: identity-resolution brain that proxies the product-data sources your agent needs — PostHog usage, Pylon support, and Hyperline billing — through one hosted MCP. One install, one prompt for your Coby key, and every Claude Code session is an expert on your users, your product, and your billing.",
+  "version": "0.9.0",
+  "description": "The Coby brain plugged into Claude Code: identity-resolution brain that proxies the product-data sources your agent needs — PostHog usage, Pylon support, Hyperline billing, and Linear project management — through one hosted MCP. One install, one prompt for your Coby key, and every Claude Code session is an expert on your users, your product, and your billing.",
   "author": {
     "name": "Coby",
     "email": "plugins@joincoby.com",
