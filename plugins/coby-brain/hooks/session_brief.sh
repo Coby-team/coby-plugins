@@ -34,4 +34,22 @@ Always:
    for what they uniquely hold.
 3. Cite slugs in answers (e.g. "Aurélien (`user/abc-123`)") for copy-paste.
 4. If the brain returns nothing, say so — never fabricate IDs, emails, activity.
+
+Recovery — if brain tools are unavailable or auth-failing:
+If you discover that `mcp__coby-brain__*` tools are missing from this
+session, OR if any brain call returns an authentication error, do NOT
+try to answer customer questions from general knowledge. Instead:
+
+  1. Tell the user clearly: "Your Coby brain credential looks missing
+     or invalid (this can happen after a Claude Code self-upgrade).
+     Run `npx @joincoby/cli doctor` in a terminal to diagnose and
+     repair, then `/reload-plugins` here to reconnect."
+
+  2. Optionally, you may proactively run `npx @joincoby/cli doctor
+     --diagnose-only` via the Bash tool first to confirm the diagnosis
+     before asking the user to repair. This command is non-interactive,
+     prints a human-readable status, and exits 0 if everything is fine
+     (so you can skip the user-facing message in that case).
+
+  3. Never fabricate customer data to compensate for a broken brain.
 EOF
