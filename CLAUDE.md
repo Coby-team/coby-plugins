@@ -55,6 +55,16 @@ Tracking issue to expose `autoUpdate` programmatically so third-party marketplac
 
 **SessionStart hook (`hooks/session_brief.sh`).** Runs once per session, prints a brief that orients Claude Code on the plugin context (which tools are under `mcp__coby-brain__*`, which skills exist, default routing). When skills are added/renamed, update the hook content. When MCP namespaces change in `.mcp.json`, the brief must reflect the new prefix.
 
+### SessionStart hook Recovery section
+
+The `hooks/session_brief.sh` brief includes a Recovery section that tells
+Claude what to do when `mcp__coby-brain__*` tools are missing or returning
+auth errors: suggest `npx @joincoby/cli doctor` to the user, optionally
+run `--diagnose-only` first to confirm. Static text — no shell-out, no
+disk read, no preemptive check. The dynamic diagnosis is opt-in by Claude
+via the CLI's `--diagnose-only` mode. Pattern documented in
+`/home/tom/projects/coby-brain/docs/superpowers/specs/2026-05-18-doctor-command-design.md`.
+
 ### Plugin manifest fields
 
 `plugin.json.userConfig` drives the install-time prompt. The `sensitive: true` flag determines storage path: `true` → `.credentials.json`, `false` → `settings.json`. We use `true` (history: v0.4.0 tried `false` for CLI pre-fill, v0.4.1 reverted because the CLI now writes the same `.credentials.json` path directly). When adding a new userConfig field, default to `sensitive: true` unless the value is genuinely not a secret.
